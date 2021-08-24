@@ -1,10 +1,6 @@
 FROM php:7.3-fpm
 # Copy composerlock and composer.json
-<<<<<<< HEAD
-COPY ../../test-task/composer.lock composer.json /var/www/
-=======
 COPY composer.lock /composer.json /var/www/
->>>>>>> Docker Fix
 # Set working directory
 WORKDIR /var/www
 USER root
