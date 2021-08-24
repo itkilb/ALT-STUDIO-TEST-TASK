@@ -45,20 +45,24 @@ class LocationController extends BaseController
    
         $validator = Validator::make($input, [
             'name' => 'required',
-            'detail' => 'required',
             // широта
-            'Lat' => 'required',
+            'lat' => 'required|numeric|between:-91, 91',
             // долгота
-            'Lon' => 'required'
+            'lon' => 'required|numeric|between:-181, 181'
         ]);
    
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
    
-        $product = Location::create($input);
+        $location = new Location;
+        $location->setCoordinate($input['lat'], $input['lon']);
+        $location->name = $input['name'];
+        $location->id_user = Auth::user()->id;
+        
+        $location->save();
    
-        return $this->sendResponse(new ProductResource($product), 'Product created successfully.');
+        return $this->sendResponse($location->toArray(), 'Location created successfully.');
     }
 
     /**
@@ -69,7 +73,13 @@ class LocationController extends BaseController
      */
     public function show($id)
     {
-        //
+        $location = Location::find($id);
+
+        if (is_null($location)) {
+            return $this->sendError('Location not found.');
+        }
+
+        return $this->sendResponse($location->toArray(), 'Location retrieved successfully.');
     }
 
     /**
@@ -90,9 +100,28 @@ class LocationController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Location $location)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            // широта
+            'lat' => 'required|numeric|between:-91, 91',
+            // долгота
+            'lon' => 'required|numeric|between:-181, 181'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $location->setCoordinate($input['lat'], $input['lon']);
+        $location->name = $input['name'];
+        $location->save();
+
+        return $this->sendResponse($location, 'Location update successfully.');
+
     }
 
     /**
@@ -101,8 +130,10 @@ class LocationController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Location $location)
     {
-        //
+        $location->delete();
+
+        return $this->sendResponse($location->toArray(), 'Product deleted successfully.');
     }
 }

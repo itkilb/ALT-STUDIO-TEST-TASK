@@ -19,6 +19,8 @@ class CreateLocationTable extends Migration
             $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
             $table->string('name');
             $table->point('position');
+            $table->string('lat')->virtualAs('ST_X(position)');
+            $table->string('lon')->virtualAs('ST_Y(position)');
             $table->timestamps();
         });
     }

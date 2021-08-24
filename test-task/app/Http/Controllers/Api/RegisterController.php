@@ -31,7 +31,7 @@ class RegisterController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('authToken')->accessToken['token'];
+        $success['token'] =  $user->createToken('authToken')->accessToken;
         $success['name'] =  $user->name;
    
         return $this->sendResponse($success, 'User register successfully.');
@@ -54,4 +54,20 @@ class RegisterController extends BaseController
             return $this->sendError('Unauthorised.', ['error'=>'Unauthorised']);
         } 
     }
+
+    /**
+     * Logout api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        if (Auth::check()) {
+            Auth::user()->token()->revoke();
+            return $this->sendResponse(['logout' => 'successfully'], 'Logout successfully'); 
+        } else {
+            return $this->sendError(['error' =>'api.something_went_wrong'], 'Logout error');
+        }
+    }
+
 }
