@@ -1,6 +1,6 @@
 FROM php:7.3-fpm
 # Copy composerlock and composer.json
-COPY composer.lock /composer.json /var/www/
+COPY composer.lock composer.json /var/www/
 # Set working directory
 WORKDIR /var/www
 USER root
