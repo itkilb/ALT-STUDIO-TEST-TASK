@@ -1,6 +1,10 @@
 FROM php:7.3-fpm
 # Copy composerlock and composer.json
+<<<<<<< HEAD
 COPY ../../test-task/composer.lock composer.json /var/www/
+=======
+COPY composer.lock /composer.json /var/www/
+>>>>>>> Docker Fix
 # Set working directory
 WORKDIR /var/www
 USER root
@@ -31,11 +35,12 @@ RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 # Add user for laravel application
-# bad cmd  RUN useradd -u 1000 -ms /bin/bash -g www www
+RUN groupadd -g 1000 www \
+&& useradd -u 1000 -ms /bin/bash -g www www
 # Copy existing application directory contents
-COPY ../../test-task/ /var/www
+COPY . /var/www
 # Copy existing application directory permissions
-COPY --chown=www:www ../../test-task/  /var/www
+COPY --chown=www:www .  /var/www
 # Change current user to www
 USER www
 # Expose port 9000 and start php-fpm server
